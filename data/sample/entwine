@@ -1,0 +1,160 @@
+{
+   "bounds" : [ -1100, -1100, -1100, 1100, 1100, 1100 ],
+   "boundsConforming" : [
+      -985.03827269002795,
+      -1077.2522988428827,
+      -1089.736677124165,
+      985.03827269002795,
+      1077.2522988428827,
+      1089.736677124165
+   ],
+   "format" : {
+      "compress" : true,
+      "compress-hierarchy" : "lzma",
+      "srs" : "GEOCCS[\"WGS 84\",DATUM[\"WGS_1984\",SPHEROID[\"WGS 84\",6378137,298.257223563,AUTHORITY[\"EPSG\",\"7030\"]],AUTHORITY[\"EPSG\",\"6326\"]],PRIMEM[\"Greenwich\",0,AUTHORITY[\"EPSG\",\"8901\"]],UNIT[\"metre\",1,AUTHORITY[\"EPSG\",\"9001\"]],AXIS[\"Geocentric X\",OTHER],AXIS[\"Geocentric Y\",OTHER],AXIS[\"Geocentric Z\",NORTH],AUTHORITY[\"EPSG\",\"4978\"]]",
+      "tail" : [ "numPoints", "chunkType" ],
+      "trustHeaders" : true
+   },
+   "formats" : {
+      "cesium" : {
+         "geometricErrorDivisor" : 32,
+         "tilesetSplit" : 8
+      }
+   },
+   "hierarchyStructure" : {
+      "baseDepth" : 12,
+      "coldDepth" : 0,
+      "dimensions" : 2,
+      "dynamicChunks" : true,
+      "mappedDepth" : 12,
+      "nullDepth" : 0,
+      "numPointsHint" : 10653336,
+      "pointsPerChunk" : 65536,
+      "prefixIds" : false,
+      "sparseDepth" : 17,
+      "startDepth" : 8,
+      "tubular" : true
+   },
+   "reprojection" : {
+      "in" : "",
+      "out" : "EPSG:4978"
+   },
+   "schema" : [
+      {
+         "name" : "X",
+         "size" : 8,
+         "type" : "floating"
+      },
+      {
+         "name" : "Y",
+         "size" : 8,
+         "type" : "floating"
+      },
+      {
+         "name" : "Z",
+         "size" : 8,
+         "type" : "floating"
+      },
+      {
+         "name" : "Intensity",
+         "size" : 2,
+         "type" : "unsigned"
+      },
+      {
+         "name" : "ReturnNumber",
+         "size" : 1,
+         "type" : "unsigned"
+      },
+      {
+         "name" : "NumberOfReturns",
+         "size" : 1,
+         "type" : "unsigned"
+      },
+      {
+         "name" : "ScanDirectionFlag",
+         "size" : 1,
+         "type" : "unsigned"
+      },
+      {
+         "name" : "EdgeOfFlightLine",
+         "size" : 1,
+         "type" : "unsigned"
+      },
+      {
+         "name" : "Classification",
+         "size" : 1,
+         "type" : "unsigned"
+      },
+      {
+         "name" : "ScanAngleRank",
+         "size" : 4,
+         "type" : "floating"
+      },
+      {
+         "name" : "UserData",
+         "size" : 1,
+         "type" : "unsigned"
+      },
+      {
+         "name" : "PointSourceId",
+         "size" : 2,
+         "type" : "unsigned"
+      },
+      {
+         "name" : "GpsTime",
+         "size" : 8,
+         "type" : "floating"
+      },
+      {
+         "name" : "Red",
+         "size" : 2,
+         "type" : "unsigned"
+      },
+      {
+         "name" : "Green",
+         "size" : 2,
+         "type" : "unsigned"
+      },
+      {
+         "name" : "Blue",
+         "size" : 2,
+         "type" : "unsigned"
+      },
+      {
+         "name" : "Origin",
+         "size" : 4,
+         "type" : "unsigned"
+      }
+   ],
+   "structure" : {
+      "baseDepth" : 9,
+      "coldDepth" : 10,
+      "dimensions" : 2,
+      "dynamicChunks" : true,
+      "mappedDepth" : 13,
+      "nullDepth" : 8,
+      "numPointsHint" : 10653336,
+      "pointsPerChunk" : 65536,
+      "prefixIds" : false,
+      "sparseDepth" : 13,
+      "tubular" : true
+   },
+   "transformation" : [
+      0.83801644089999527,
+      -0.54564498053340937,
+      2.7755575615628914e-17,
+      8.0888185038929805e-10,
+      0.37810382345174942,
+      0.58070216298876831,
+      0.72098716811836139,
+      -1.6298145055770874e-09,
+      -0.39340302931278126,
+      -0.6041991005611157,
+      0.69294841323771406,
+      -6367997.2686695,
+      0,
+      0,
+      0,
+      1
+   ]
+}

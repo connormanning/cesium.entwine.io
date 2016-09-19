@@ -1,0 +1,32 @@
+{
+   "fileInfo" : [
+      {
+         "bounds" : [
+            -985.03827269002795,
+            -1077.2522988428827,
+            -1089.736677124165,
+            985.03827269002795,
+            1077.2522988428827,
+            1089.736677124165
+         ],
+         "numPoints" : 10653336,
+         "path" : "/Users/connor/data/autzen-full.laz",
+         "pointStats" : {
+            "inserts" : 205732,
+            "outOfBounds" : 0,
+            "overflows" : 10447604
+         },
+         "status" : "inserted"
+      }
+   ],
+   "fileStats" : {
+      "errors" : 0,
+      "inserts" : 1,
+      "omits" : 0
+   },
+   "pointStats" : {
+      "inserts" : 205732,
+      "outOfBounds" : 0,
+      "overflows" : 10447604
+   }
+}
