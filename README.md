@@ -13,7 +13,7 @@ git clone git@github.com:connormanning/entwine-cesium-pages.git ~/entwine-cesium
 cd entwine-cesium-pages
 ```
 
-Now, statically serve the current directory.  With Python:  
+Now, statically serve the current directory.  With Python:
 ```
 python -m SimpleHTTPServer 9000     # Python 2.x
 python -m http.server 9000          # Python 3.x
@@ -53,3 +53,7 @@ Your data needs to contain accurate coordinate system information so that it can
 
 ### State of Entwine's 3D Tiles output
 Entwine's 3D tiles is very much a prototype.  It may change, and doesn't support some things that the rest of Entwine supports.  For example, subset builds and merges are not supported for `cesium`-style builds.  Neither are continued builds (full support will come soon).  Modifying certain configuration entries, which would otherwise be supported, may produce invalid outputs.
+
+## Licensing
+This repository consists mostly of a compiled version of Cesium, which is Apache licensed.  The rest of the repository will adopt the Apache license as well.  See the full license [here](https://github.com/connormanning/entwine-cesium-pages/blob/master/LICENSE.md).
+
