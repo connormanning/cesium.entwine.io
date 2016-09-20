@@ -44,7 +44,7 @@ After the log that says `Save complete`, browse to [http://localhost:9000?resour
 Using the `cesium.json` configuration template caused Entwine to reproject the data to match Cesium's view of the world for indexing, and also produced an output that conforms to the 3D tile specification.  This allows it to be displayed in Cesium with the `3d-tiles` branch, which is compiled and bundled in this repository.
 
 ### What next?
-By replacing the arguments to `-i` (input) and `-o` (output) from the command above, you can build more of your own datasets locally and view them in Cesium.
+By replacing the arguments to `-i` (input) and `-o` (output) from the command above, you can build more of your own datasets locally and view them in Cesium by replacing the `resource` query parameter.
 
 ## Anything else?
 
