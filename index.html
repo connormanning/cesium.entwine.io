@@ -9,10 +9,76 @@
           width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden;
       }
   </style>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 </head>
 
 <body>
+    <div id="top">
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-2 col-sm-3"></div>
+                <div class="col-xs-8 col-sm-6">
+                    <a href="https://entwine.io"/>
+                        <img id="entwine-banner" src="img/banner.png"/>
+                    </a>
+                </div>
+                <div class="col-xs-2 col-sm-3"></div>
+            </div>
+            <div class="row">
+                <div class="col-xs-2 col-sm-3"></div>
+                <div class="col-xs-8 col-sm-6">
+                    <a href="https://github.com/AnalyticalGraphicsInc/3d-tiles">
+                        <img
+                            class="center-block"
+                            id="tiles-banner"
+                            src="img/3d-tiles.png"/>
+                    </a>
+                </div>
+                <div class="col-xs-2 col-sm-3"></div>
+            </div>
+            <div id="resources" class="center-block">
+                <table class="table">
+                    <thead>
+                        <tr><th class="text-center">Resources</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td class="text-center">
+                            <a href="?resource=nyc"/>New York City</a>
+                        </td></tr>
+                        <tr><td class="text-center">
+                            <a href="?resource=autzen"/>Autzen Stadium</a>
+                        </td></tr>
+                        <tr><td class="text-center">
+                            <a href="?resource=red-rocks"/>
+                                Red Rocks Amphitheatre
+                            </a>
+                        </td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="row">
+                <div class="col-xs-1 col-sm-2"></div>
+                <div class="col-xs-10 col-xs-8" id="about">
+                    <h3 class="text-center">What's this?</h3>
+                    <p>
+                        This is a demo showing the results of Entwine's 3D Tiles output within Cesium.  Some links for more background:
+                        <ul>
+                            <li><a href="https://github.com/connormanning/entwine/pull/12">Pull request for prototype 3D tiles output from Entwine</a></li>
+                            <li><a href="https://github.com/AnalyticalGraphicsInc/3d-tiles/issues/22">3D Tiles point cloud tile specification discussion</a></li>
+                            <li><a href="https://github.com/connormanning/entwine-cesium-pages">Instructions and sample project to build your own 3D tiles with Entwine</a></li>
+                        </ul>
+                    </p>
+                </div>
+                <div class="col-xs-10 col-sm-2"></div>
+            </div>
+        </div>
+    </div>
   <div id="cesiumContainer"></div>
+  <div id="entwine-logo">
+      <a href="https://entwine.io">
+          <img id="entwine-image" src="img/logo.png"/>
+      </a>
+  </div>
   <script>
     var getQueryParam = function(name) {
         name = name.replace(/[\[\]]/g, "\\$&");
@@ -24,34 +90,66 @@
     };
 
     var resource = getQueryParam('resource');
-    if (!resource) alert('Use query parameter "resource" to select a resource');
-    var viewer = new Cesium.Viewer('cesiumContainer');
+    if (!resource) {
+        document.getElementById("top").style.display = "block";
+        document.getElementById("entwine-logo").style.display = "none";
+    }
+    else {
+        var viewer = new Cesium.Viewer('cesiumContainer');
 
-    var tileset = viewer.scene.primitives.add(new Cesium.Cesium3DTileset({
-        url: './data/' + resource + '/cesium'
-    }));
+        var tileset = viewer.scene.primitives.add(new Cesium.Cesium3DTileset({
+            url: './data/' + resource + '/cesium'
+        }));
 
-    tileset.readyPromise.then(function() {
-        console.log('Loaded tileset');
-        var bounding = tileset._root._boundingVolume;
-        var center = bounding.boundingSphere.center;
-        var cart = Cesium.Ellipsoid.WGS84.cartesianToCartographic(center);
+        tileset.readyPromise.then(function() {
+            console.log('Loaded tileset');
+            var bounding = tileset._root._boundingVolume;
+            var center = bounding.boundingSphere.center;
+            var cart = Cesium.Ellipsoid.WGS84.cartesianToCartographic(center);
 
-        var dest = Cesium.Cartesian3.fromDegrees(
-                cart.longitude * (180 / Math.PI),
-                cart.latitude * (180 / Math.PI),
-                bounding._boundingSphere.radius * 2.2);
+            var dest = Cesium.Cartesian3.fromDegrees(
+                    cart.longitude * (180 / Math.PI),
+                    cart.latitude * (180 / Math.PI),
+                    bounding._boundingSphere.radius * 2.2);
 
-        viewer.camera.setView({ destination: dest });
-    });
+            viewer.camera.setView({ destination: dest });
+        });
+    }
   </script>
-  <div id="entwine-logo">
-      <a href="https://entwine.io">
-          <img id="entwine-image" src="logo.png"/>
-      </a>
-  </div>
 </body>
+
 <style>
+body {
+    background: #eee;
+}
+
+.table {
+    border-radius: 5px;
+    width: 50%;
+    margin: 0px auto;
+    float: none;
+}
+
+#entwine-banner, #cesium-banner, #tiles-banner {
+    width: 100%;
+}
+
+#resources {
+    margin-top: 64px;
+}
+
+#about {
+    margin-top: 32px;
+}
+
+#top {
+    display: none;
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    margin: 10px 10px 10px 10px;
+}
+
 #entwine-logo {
     position: absolute;
     bottom: 56px;
