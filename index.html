@@ -104,6 +104,10 @@
             url: './data/' + resource + '/cesium'
         }));
 
+        viewer.terrainProvider = new Cesium.CesiumTerrainProvider({
+            url : '//assets.agi.com/stk-terrain/world'
+        });
+
         tileset.readyPromise.then(function() {
             console.log('Loaded tileset');
             var bounding = tileset._root._boundingVolume;
