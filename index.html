@@ -71,6 +71,11 @@
                     </tbody>
                 </table>
             </div>
+            <div id="more">
+                <h3 class="text-center">Other renderers</h3>
+                <p class="text-center"><a href="speck.ly">Plasio</a><p>
+                <p class="text-center"><a href="potree.entwine.io">Potree</a></p>
+            </div>
             <div class="row">
                 <div class="col-xs-1 col-sm-2"></div>
                 <div class="col-xs-10 col-xs-8" id="about">
@@ -111,7 +116,7 @@
     }
     else {
         var style = document.createElement('style');
-        style.innerHTML = "body, html { width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden; }"
+        style.innerHTML = "body, html { width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden; } #top { display: none; }"
         document.body.appendChild(style);
 
         var viewer = new Cesium.Viewer('cesiumContainer');
@@ -161,7 +166,7 @@ body {
     margin-top: 64px;
 }
 
-#about {
+#more, #about {
     margin-top: 32px;
 }
 
