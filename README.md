@@ -22,9 +22,9 @@ python -m http.server 9000          # Python 3.x
 Now browse to [http://localhost:9000?resource=sample](http://localhost:9000?resource=sample) to view a very small and sparse sample dataset.
 
 ### Building your own tilesets
-Now let's build a tileset locally and view it.  First, pull the latest Entwine `cesium` tag with [Docker](https://www.docker.com/).
+Now let's build a tileset locally and view it.  First, pull the latest Entwine [Docker](https://www.docker.com/) image.
 ```
-docker pull connormanning/entwine:cesium
+docker pull connormanning/entwine
 ```
 
 Now let's build a small sample set using Entwine's `cesium` template, sending our output to the `data` subdirectory of the `entwine-cesium-pages` repository we cloned earlier.
@@ -56,4 +56,3 @@ Entwine's 3D tiles is very much a prototype.  It may change, and doesn't support
 
 ## Licensing
 This repository consists mostly of a compiled version of Cesium, which is Apache licensed.  The rest of the repository will adopt the Apache license as well.  See the full license [here](https://github.com/connormanning/entwine-cesium-pages/blob/master/LICENSE.md).
-
