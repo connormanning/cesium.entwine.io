@@ -32,7 +32,7 @@ Now let's build a small sample set using Entwine's `cesium` template, sending ou
 ```
 docker run -it \
     -v ~/entwine-cesium-pages/data:/opt/output \
-    connormanning/entwine:cesium \
+    connormanning/entwine \
     entwine build /entwine/config/cesium.json \
         -i https://s3.amazonaws.com/hobu-lidar/red-rocks/red-rocks.laz \
         -o /opt/output/red-rocks
