@@ -31,11 +31,11 @@ Now let's build a small sample set using Entwine's `cesium` template, sending ou
 
 ```
 docker run -it \
-    -v ~/entwine-cesium-pages/data:/opt/output \
+    -v $HOME:$HOME \
     connormanning/entwine \
-    entwine build /var/entwine/config/cesium.json \
+    build /var/entwine/config/cesium.json \
         -i https://s3.amazonaws.com/hobu-lidar/red-rocks/red-rocks.laz \
-        -o /opt/output/red-rocks
+        -o ~/entwine-cesium-pages/data/red-rocks
 ```
 
 After the log that says `Save complete`, browse to [http://localhost:9000?resource=red-rocks](http://localhost:9000?resource=red-rocks) to see the results.
