@@ -133,6 +133,10 @@
             url: './data/' + resource + '/cesium'
         }));
 
+        tileset.style = new Cesium.Cesium3DTileStyle({
+            pointSize: getQueryParam('pointSize') || 2
+        });
+
         tileset.readyPromise.then(function() {
             console.log('Loaded tileset');
             var bounding = tileset._root._boundingVolume;
