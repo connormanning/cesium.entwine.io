@@ -370,6 +370,60 @@ define('Core/defaultValue',[
     return defaultValue;
 });
 
+define('Core/arrayFill',[
+        './Check',
+        './defaultValue',
+        './defined'
+    ], function(
+        Check,
+        defaultValue,
+        defined) {
+    'use strict';
+
+    /**
+     * Fill an array or a portion of an array with a given value.
+     *
+     * @param {Array} array The array to fill.
+     * @param {*} value The value to fill the array with.
+     * @param {Number} [start=0] The index to start filling at.
+     * @param {Number} [end=array.length] The index to end stop at.
+     *
+     * @returns {Array} The resulting array.
+     * @private
+     */
+    function arrayFill(array, value, start, end) {
+                Check.defined('array', array);
+        Check.defined('value', value);
+        if (defined(start)) {
+            Check.typeOf.number('start', start);
+        }
+        if (defined(end)) {
+            Check.typeOf.number('end', end);
+        }
+        
+        if (typeof array.fill === 'function') {
+            return array.fill(value, start, end);
+        }
+
+        var length = array.length >>> 0;
+        var relativeStart = defaultValue(start, 0);
+        // If negative, find wrap around position
+        var k = (relativeStart < 0) ? Math.max(length + relativeStart, 0) : Math.min(relativeStart, length);
+        var relativeEnd = defaultValue(end, length);
+        // If negative, find wrap around position
+        var last = (relativeEnd < 0) ? Math.max(length + relativeEnd, 0) : Math.min(relativeEnd, length);
+
+        // Fill array accordingly
+        while (k < last) {
+            array[k] = value;
+            k++;
+        }
+        return array;
+    }
+
+    return arrayFill;
+});
+
 /*
   I've wrapped Makoto Matsumoto and Takuji Nishimura's code in a namespace
   so it's better encapsulated. Now you can have multiple random number generators
@@ -11262,14 +11316,6 @@ define('Core/FeatureDetection',[
         return isFirefox() && firefoxVersionResult;
     }
 
-    var isNodeJsResult;
-    function isNodeJs() {
-        if (!defined(isNodeJsResult)) {
-            isNodeJsResult = typeof process === 'object' && Object.prototype.toString.call(process) === '[object process]'; // eslint-disable-line
-        }
-        return isNodeJsResult;
-    }
-
     var hasPointerEvents;
     function supportsPointerEvents() {
         if (!defined(hasPointerEvents)) {
@@ -11337,7 +11383,6 @@ define('Core/FeatureDetection',[
         isFirefox : isFirefox,
         firefoxVersion : firefoxVersion,
         isWindows : isWindows,
-        isNodeJs: isNodeJs,
         hardwareConcurrency : defaultValue(theNavigator.hardwareConcurrency, 3),
         supportsPointerEvents : supportsPointerEvents,
         supportsImageRenderingPixelated: supportsImageRenderingPixelated,
@@ -18024,22 +18069,39 @@ define('Core/JulianDate',[
         }
         
         var gDate = JulianDate.toGregorianDate(julianDate, gregorianDateScratch);
+        var year = gDate.year;
+        var month = gDate.month;
+        var day = gDate.day;
+        var hour = gDate.hour;
+        var minute = gDate.minute;
+        var second = gDate.second;
+        var millisecond = gDate.millisecond;
+
+        // special case - Iso8601.MAXIMUM_VALUE produces a string which we can't parse unless we adjust.
+        // 10000-01-01T00:00:00 is the same instant as 9999-12-31T24:00:00
+        if (year === 10000 && month === 1 && day === 1 && hour === 0 && minute === 0 && second === 0 && millisecond === 0) {
+            year = 9999;
+            month = 12;
+            day = 31;
+            hour = 24;
+        }
+
         var millisecondStr;
 
-        if (!defined(precision) && gDate.millisecond !== 0) {
+        if (!defined(precision) && millisecond !== 0) {
             //Forces milliseconds into a number with at least 3 digits to whatever the default toString() precision is.
-            millisecondStr = (gDate.millisecond * 0.01).toString().replace('.', '');
-            return sprintf('%04d-%02d-%02dT%02d:%02d:%02d.%sZ', gDate.year, gDate.month, gDate.day, gDate.hour, gDate.minute, gDate.second, millisecondStr);
+            millisecondStr = (millisecond * 0.01).toString().replace('.', '');
+            return sprintf('%04d-%02d-%02dT%02d:%02d:%02d.%sZ', year, month, day, hour, minute, second, millisecondStr);
         }
 
         //Precision is either 0 or milliseconds is 0 with undefined precision, in either case, leave off milliseconds entirely
         if (!defined(precision) || precision === 0) {
-            return sprintf('%04d-%02d-%02dT%02d:%02d:%02dZ', gDate.year, gDate.month, gDate.day, gDate.hour, gDate.minute, gDate.second);
+            return sprintf('%04d-%02d-%02dT%02d:%02d:%02dZ', year, month, day, hour, minute, second);
         }
 
         //Forces milliseconds into a number with at least 3 digits to whatever the specified precision is.
-        millisecondStr = (gDate.millisecond * 0.01).toFixed(precision).replace('.', '').slice(0, precision);
-        return sprintf('%04d-%02d-%02dT%02d:%02d:%02d.%sZ', gDate.year, gDate.month, gDate.day, gDate.hour, gDate.minute, gDate.second, millisecondStr);
+        millisecondStr = (millisecond * 0.01).toFixed(precision).replace('.', '').slice(0, precision);
+        return sprintf('%04d-%02d-%02dT%02d:%02d:%02d.%sZ', year, month, day, hour, minute, second, millisecondStr);
     };
 
     /**
@@ -22553,6 +22615,7 @@ define('Core/Resource',[
             }).end();
     }
 
+    var noXMLHttpRequest = typeof XMLHttpRequest === 'undefined';
     Resource._Implementations.loadWithXhr = function(url, responseType, method, data, headers, deferred, overrideMimeType) {
         var dataUriRegexResult = dataUriRegex.exec(url);
         if (dataUriRegexResult !== null) {
@@ -22560,7 +22623,7 @@ define('Core/Resource',[
             return;
         }
 
-        if (FeatureDetection.isNodeJs()) {
+        if (noXMLHttpRequest) {
             loadWithHttpRequest(url, responseType, method, data, headers, deferred, overrideMimeType);
             return;
         }
@@ -23088,11 +23151,13 @@ define('Core/EarthOrientationParameters',[
 define('Core/buildModuleUrl',[
         './defined',
         './DeveloperError',
+        './getAbsoluteUri',
         './Resource',
         'require'
     ], function(
         defined,
         DeveloperError,
+        getAbsoluteUri,
         Resource,
         require) {
     'use strict';
@@ -23111,6 +23176,21 @@ define('Core/buildModuleUrl',[
         return undefined;
     }
 
+    var a;
+    function tryMakeAbsolute(url) {
+        if (typeof document === 'undefined') {
+            //Node.js and Web Workers. In both cases, the URL will already be absolute.
+            return url;
+        }
+
+        if (!defined(a)) {
+            a = document.createElement('a');
+        }
+        a.href = url;
+        a.href = a.href; // IE only absolutizes href on get, not set
+        return a.href;
+    }
+
     var baseResource;
     function getCesiumBaseUrl() {
         if (defined(baseResource)) {
@@ -23120,6 +23200,8 @@ define('Core/buildModuleUrl',[
         var baseUrlString;
         if (typeof CESIUM_BASE_URL !== 'undefined') {
             baseUrlString = CESIUM_BASE_URL;
+        } else if (defined(define.amd) && !define.amd.toUrlUndefined && defined(require.toUrl)) {
+            baseUrlString = getAbsoluteUri('..', buildModuleUrl('Core/buildModuleUrl.js'));
         } else {
             baseUrlString = getBaseUrlFromCesiumScript();
         }
@@ -23129,7 +23211,7 @@ define('Core/buildModuleUrl',[
         }
         
         baseResource = new Resource({
-            url: baseUrlString
+            url: tryMakeAbsolute(baseUrlString)
         });
         baseResource.appendForwardSlash();
 
@@ -23138,7 +23220,7 @@ define('Core/buildModuleUrl',[
 
     function buildModuleUrlFromRequireToUrl(moduleID) {
         //moduleID will be non-relative, so require it relative to this module, in Core.
-        return require.toUrl('../' + moduleID);
+        return tryMakeAbsolute(require.toUrl('../' + moduleID));
     }
 
     function buildModuleUrlFromBaseUrl(moduleID) {
@@ -23149,7 +23231,6 @@ define('Core/buildModuleUrl',[
     }
 
     var implementation;
-    var a;
 
     /**
      * Given a non-relative moduleID, returns an absolute URL to the file represented by that module ID,
@@ -23159,10 +23240,6 @@ define('Core/buildModuleUrl',[
      * @private
      */
     function buildModuleUrl(moduleID) {
-        if (typeof document === 'undefined') {
-            //document is undefined in node
-            return moduleID;
-        }
         if (!defined(implementation)) {
             //select implementation
             if (defined(define.amd) && !define.amd.toUrlUndefined && defined(require.toUrl)) {
@@ -23172,16 +23249,8 @@ define('Core/buildModuleUrl',[
             }
         }
 
-        if (!defined(a)) {
-            a = document.createElement('a');
-        }
-
         var url = implementation(moduleID);
-
-        a.href = url;
-        a.href = a.href; // IE only absolutizes href on get, not set
-
-        return a.href;
+        return url;
     }
 
     // exposed for testing
@@ -23200,6 +23269,11 @@ define('Core/buildModuleUrl',[
             url: value
         });
     };
+
+    /**
+     * Gets the base URL for resolving modules.
+     */
+    buildModuleUrl.getCesiumBaseUrl = getCesiumBaseUrl;
 
     return buildModuleUrl;
 });
@@ -26406,6 +26480,25 @@ define('Core/CorridorGeometryLibrary',[
     return CorridorGeometryLibrary;
 });
 
+define('Core/GeometryOffsetAttribute',[
+        '../Core/freezeObject'
+    ], function(
+        freezeObject) {
+    'use strict';
+
+    /**
+     * Represents which vertices should have a value of `true` for the `applyOffset` attribute
+     * @private
+     */
+    var GeometryOffsetAttribute = {
+        NONE : 0,
+        TOP : 1,
+        ALL : 2
+    };
+
+    return freezeObject(GeometryOffsetAttribute);
+});
+
 define('Core/GeometryType',[
         './freezeObject'
     ], function(
@@ -27357,6 +27450,7 @@ define('Core/Geometry',[
         './defaultValue',
         './defined',
         './DeveloperError',
+        './GeometryOffsetAttribute',
         './GeometryType',
         './Matrix2',
         './Matrix3',
@@ -27373,6 +27467,7 @@ define('Core/Geometry',[
         defaultValue,
         defined,
         DeveloperError,
+        GeometryOffsetAttribute,
         GeometryType,
         Matrix2,
         Matrix3,
@@ -27525,6 +27620,12 @@ define('Core/Geometry',[
          * @private
          */
         this.boundingSphereCV = options.boundingSphereCV;
+
+        /**
+         * @private
+         * Used for computing the bounding sphere for geometry using the applyOffset vertex attribute
+         */
+        this.offsetAttribute = options.offsetAttribute;
     }
 
     /**
@@ -29333,21 +29434,23 @@ define('Core/VertexFormat',[
 });
 
 define('Core/CorridorGeometry',[
+        './arrayFill',
         './arrayRemoveDuplicates',
         './BoundingSphere',
         './Cartesian3',
         './Cartographic',
+        './Check',
         './ComponentDatatype',
         './CornerType',
         './CorridorGeometryLibrary',
         './defaultValue',
         './defined',
         './defineProperties',
-        './DeveloperError',
         './Ellipsoid',
         './Geometry',
         './GeometryAttribute',
         './GeometryAttributes',
+        './GeometryOffsetAttribute',
         './IndexDatatype',
         './Math',
         './PolygonPipeline',
@@ -29355,21 +29458,23 @@ define('Core/CorridorGeometry',[
         './Rectangle',
         './VertexFormat'
     ], function(
+        arrayFill,
         arrayRemoveDuplicates,
         BoundingSphere,
         Cartesian3,
         Cartographic,
+        Check,
         ComponentDatatype,
         CornerType,
         CorridorGeometryLibrary,
         defaultValue,
         defined,
         defineProperties,
-        DeveloperError,
         Ellipsoid,
         Geometry,
         GeometryAttribute,
         GeometryAttributes,
+        GeometryOffsetAttribute,
         IndexDatatype,
         CesiumMath,
         PolygonPipeline,
@@ -29953,6 +30058,21 @@ define('Core/CorridorGeometry',[
                 attributes.normal = undefined;
             }
         }
+        if (defined(params.offsetAttribute)) {
+            var applyOffset = new Uint8Array(size * 6);
+            if (params.offsetAttribute === GeometryOffsetAttribute.TOP) {
+                applyOffset = arrayFill(applyOffset, 1, 0, size); // top face
+                applyOffset = arrayFill(applyOffset, 1, size*2, size * 4); // top wall
+            } else {
+                var applyOffsetValue = params.offsetAttribute === GeometryOffsetAttribute.NONE ? 0 : 1;
+                applyOffset = arrayFill(applyOffset, applyOffsetValue);
+            }
+            attributes.applyOffset = new GeometryAttribute({
+                componentDatatype : ComponentDatatype.UNSIGNED_BYTE,
+                componentsPerAttribute : 1,
+                values: applyOffset
+            });
+        }
 
         var iLength = indices.length;
         var twoSize = size + size;
@@ -30038,7 +30158,7 @@ define('Core/CorridorGeometry',[
     var scratchCartographicMin = new Cartographic();
     var scratchCartographicMax = new Cartographic();
 
-    function computeRectangle(positions, ellipsoid, width, cornerType) {
+    function computeRectangle(positions, ellipsoid, width, cornerType, result) {
         positions = scaleToSurface(positions, ellipsoid);
         var cleanPositions = arrayRemoveDuplicates(positions, Cartesian3.equalsEpsilon);
         var length = cleanPositions.length;
@@ -30096,7 +30216,7 @@ define('Core/CorridorGeometry',[
             scratchCartographicMax.longitude = Math.max(scratchCartographicMax.longitude, lon);
         }
 
-        var rectangle = new Rectangle();
+        var rectangle = defined(result) ? result : new Rectangle();
         rectangle.north = scratchCartographicMax.latitude;
         rectangle.south = scratchCartographicMin.latitude;
         rectangle.east = scratchCartographicMax.longitude;
@@ -30138,12 +30258,8 @@ define('Core/CorridorGeometry',[
         var positions = options.positions;
         var width = options.width;
 
-                if (!defined(positions)) {
-            throw new DeveloperError('options.positions is required.');
-        }
-        if (!defined(width)) {
-            throw new DeveloperError('options.width is required.');
-        }
+                Check.defined('options.positions', positions);
+        Check.defined('options.width', width);
         
         var height = defaultValue(options.height, 0.0);
         var extrudedHeight = defaultValue(options.extrudedHeight, height);
@@ -30158,13 +30274,14 @@ define('Core/CorridorGeometry',[
         this._granularity = defaultValue(options.granularity, CesiumMath.RADIANS_PER_DEGREE);
         this._shadowVolume = defaultValue(options.shadowVolume, false);
         this._workerName = 'createCorridorGeometry';
+        this._offsetAttribute = options.offsetAttribute;
         this._rectangle = undefined;
 
         /**
          * The number of elements used to pack the object into an array.
          * @type {Number}
          */
-        this.packedLength = 1 + positions.length * Cartesian3.packedLength + Ellipsoid.packedLength + VertexFormat.packedLength + 6;
+        this.packedLength = 1 + positions.length * Cartesian3.packedLength + Ellipsoid.packedLength + VertexFormat.packedLength + 7;
     }
 
     /**
@@ -30177,12 +30294,8 @@ define('Core/CorridorGeometry',[
      * @returns {Number[]} The array that was packed into
      */
     CorridorGeometry.pack = function(value, array, startingIndex) {
-                if (!defined(value)) {
-            throw new DeveloperError('value is required');
-        }
-        if (!defined(array)) {
-            throw new DeveloperError('array is required');
-        }
+                Check.defined('value', value);
+        Check.defined('array', array);
         
         startingIndex = defaultValue(startingIndex, 0);
 
@@ -30205,7 +30318,8 @@ define('Core/CorridorGeometry',[
         array[startingIndex++] = value._extrudedHeight;
         array[startingIndex++] = value._cornerType;
         array[startingIndex++] = value._granularity;
-        array[startingIndex] = value._shadowVolume ? 1.0 : 0.0;
+        array[startingIndex++] = value._shadowVolume ? 1.0 : 0.0;
+        array[startingIndex] = defaultValue(value._offsetAttribute, -1);
 
         return array;
     };
@@ -30221,7 +30335,8 @@ define('Core/CorridorGeometry',[
         extrudedHeight : undefined,
         cornerType : undefined,
         granularity : undefined,
-        shadowVolume: undefined
+        shadowVolume: undefined,
+        offsetAttribute: undefined
     };
 
     /**
@@ -30233,9 +30348,7 @@ define('Core/CorridorGeometry',[
      * @returns {CorridorGeometry} The modified result parameter or a new CorridorGeometry instance if one was not provided.
      */
     CorridorGeometry.unpack = function(array, startingIndex, result) {
-                if (!defined(array)) {
-            throw new DeveloperError('array is required');
-        }
+                Check.defined('array', array);
         
         startingIndex = defaultValue(startingIndex, 0);
 
@@ -30257,7 +30370,8 @@ define('Core/CorridorGeometry',[
         var extrudedHeight = array[startingIndex++];
         var cornerType = array[startingIndex++];
         var granularity = array[startingIndex++];
-        var shadowVolume = array[startingIndex] === 1.0;
+        var shadowVolume = array[startingIndex++] === 1.0;
+        var offsetAttribute = array[startingIndex];
 
         if (!defined(result)) {
             scratchOptions.positions = positions;
@@ -30267,6 +30381,8 @@ define('Core/CorridorGeometry',[
             scratchOptions.cornerType = cornerType;
             scratchOptions.granularity = granularity;
             scratchOptions.shadowVolume = shadowVolume;
+            scratchOptions.offsetAttribute = offsetAttribute === -1 ? undefined : offsetAttribute;
+
             return new CorridorGeometry(scratchOptions);
         }
 
@@ -30279,8 +30395,35 @@ define('Core/CorridorGeometry',[
         result._cornerType = cornerType;
         result._granularity = granularity;
         result._shadowVolume = shadowVolume;
+        result._offsetAttribute = offsetAttribute === -1 ? undefined : offsetAttribute;
 
         return result;
+    };
+
+    /**
+     * Computes the bounding rectangle given the provided options
+     *
+     * @param {Object} options Object with the following properties:
+     * @param {Cartesian3[]} options.positions An array of positions that define the center of the corridor.
+     * @param {Number} options.width The distance between the edges of the corridor in meters.
+     * @param {Ellipsoid} [options.ellipsoid=Ellipsoid.WGS84] The ellipsoid to be used as a reference.
+     * @param {CornerType} [options.cornerType=CornerType.ROUNDED] Determines the style of the corners.
+     * @param {Rectangle} [result] An object in which to store the result.
+     *
+     * @returns {Rectangle} The result rectangle.
+     */
+    CorridorGeometry.computeRectangle = function(options, result) {
+        options = defaultValue(options, defaultValue.EMPTY_OBJECT);
+        var positions = options.positions;
+        var width = options.width;
+
+                Check.defined('options.positions', positions);
+        Check.defined('options.width', width);
+        
+        var ellipsoid = defaultValue(options.ellipsoid, Ellipsoid.WGS84);
+        var cornerType = defaultValue(options.cornerType, CornerType.ROUNDED);
+
+        return computeRectangle(positions, ellipsoid, width, cornerType, result);
     };
 
     /**
@@ -30319,11 +30462,24 @@ define('Core/CorridorGeometry',[
             params.height = height;
             params.extrudedHeight = extrudedHeight;
             params.shadowVolume = corridorGeometry._shadowVolume;
+            params.offsetAttribute = corridorGeometry._offsetAttribute;
             attr = computePositionsExtruded(params, vertexFormat);
         } else {
             var computedPositions = CorridorGeometryLibrary.computePositions(params);
             attr = combine(computedPositions, vertexFormat, ellipsoid);
             attr.attributes.position.values = PolygonPipeline.scaleToGeodeticHeight(attr.attributes.position.values, height, ellipsoid);
+
+            if (defined(corridorGeometry._offsetAttribute)) {
+                var applyOffsetValue = corridorGeometry._offsetAttribute === GeometryOffsetAttribute.NONE ? 0 : 1;
+                var length = attr.attributes.position.values.length;
+                var applyOffset = new Uint8Array(length / 3);
+                arrayFill(applyOffset, applyOffsetValue);
+                attr.attributes.applyOffset = new GeometryAttribute({
+                    componentDatatype : ComponentDatatype.UNSIGNED_BYTE,
+                    componentsPerAttribute : 1,
+                    values: applyOffset
+                });
+            }
         }
         var attributes = attr.attributes;
         var boundingSphere = BoundingSphere.fromVertices(attributes.position.values, undefined, 3);
@@ -30335,7 +30491,8 @@ define('Core/CorridorGeometry',[
             attributes : attributes,
             indices : attr.indices,
             primitiveType : PrimitiveType.TRIANGLES,
-            boundingSphere : boundingSphere
+            boundingSphere : boundingSphere,
+            offsetAttribute : corridorGeometry._offsetAttribute
         });
     };
 

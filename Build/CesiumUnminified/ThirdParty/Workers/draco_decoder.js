@@ -49,7 +49,6 @@ var Pa=[lp,Mo,No,mn,wo,No,Xb,zd,jn,_n,np,np,No,np,No,No,Bj,Mo,Bj,Ml,Bj,Sm,zj,No,
 if (typeof exports === 'object' && typeof module === 'object')
   module.exports = DracoDecoderModule;
 else if (typeof define === 'function' && define['amd'])
-  define('ThirdParty/Workers/draco_decoder',[], function() { return DracoDecoderModule; });
+  define([], function() { return DracoDecoderModule; });
 else if (typeof exports === 'object')
   exports["DracoDecoderModule"] = DracoDecoderModule;
-

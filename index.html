@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <title>Entwine 3DTiles</title>
-  <script src="./Build/Cesium/Cesium.js"></script>
+  <script src="./Build/CesiumUnminified/Cesium.js"></script>
   <style>
       @import url(./Build/Cesium/Widgets/widgets.css);
       #cesiumContainer {
@@ -43,7 +43,7 @@
                     </thead>
                     <tbody>
                         <tr><td class="text-center">
-                            <a href="?url=http://cesium.entwine.io/data/nyc/cesium"/>New York City</a>
+                            <a href="?url=http://na.entwine.io/cesium/nyc-t/tileset.json"/>New York City</a>
                         </td></tr>
                         <tr><td class="text-center">
                             <a href="?url=http://cesium.entwine.io/data/red-rocks/cesium"/>
@@ -146,7 +146,7 @@
             var dest = Cesium.Cartesian3.fromDegrees(
                     cart.longitude * (180 / Math.PI),
                     cart.latitude * (180 / Math.PI),
-                    bounding._boundingSphere.radius * 2.2);
+                    bounding._boundingSphere.radius * 1.0);
 
             viewer.camera.setView({ destination: dest });
         });
