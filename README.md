@@ -7,52 +7,36 @@ For example, here is a 4.7-billion point tileset of New York City using the cont
 
 ## How do I use it?
 
-### Getting started
-```
-git clone git@github.com:connormanning/entwine-cesium-pages.git ~/entwine-cesium-pages
-cd entwine-cesium-pages
-```
-
-Now, statically serve the current directory.  With Python:
-```
-python -m SimpleHTTPServer 9000     # Python 2.x
-python -m http.server 9000          # Python 3.x
-```
-
-Now browse to [http://localhost:9000?resource=sample](http://localhost:9000?resource=sample) to view a very small and sparse sample dataset.
-
-### Building your own tilesets
-Now let's build a tileset locally and view it.  First, pull the latest Entwine [Docker](https://www.docker.com/) image.
-```
-docker pull connormanning/entwine
-```
-
-Now let's build a small sample set using Entwine's `cesium` template, sending our output to the `data` subdirectory of the `entwine-cesium-pages` repository we cloned earlier.
-
+### Build a tileset
+We can build a tileset locally and view it with Cesium.  First, pull the latest Entwine [Docker](https://www.docker.com/) image and index some data to create an [Entwine Point Tile](https://github.com/connormanning/entwine/blob/master/doc/entwine-point-tile.md) dataset.  We'll need to reproject to `EPSG:4978`.
 ```
 docker run -it \
-    -v $HOME:$HOME \
-    connormanning/entwine \
-    build /var/entwine/config/cesium.json \
-        -i https://s3.amazonaws.com/hobu-lidar/red-rocks/red-rocks.laz \
-        -o ~/entwine-cesium-pages/data/red-rocks
+    -v ~/entwine:/entwine \
+    connormanning/entwine build \
+        -i https://entwine.io/data/red-rocks.laz \
+        -o /entwine/red-rocks-ecef \
+        -r EPSG:4978
 ```
 
-After the log that says `Save complete`, browse to [http://localhost:9000?resource=red-rocks](http://localhost:9000?resource=red-rocks) to see the results.
+Then, convert this EPT dataset to 3D Tiles.
+```
+docker run -it \
+    -v ~/entwine:/entwine \
+    connormanning/entwine convert \
+        -i /entwine/red-rocks-ecef \
+        -o /entwine/cesium/red-rocks
+```
 
-### What just happened?
-Using the `cesium.json` configuration template caused Entwine to reproject the data to match Cesium's view of the world for indexing, and also produced an output that conforms to the 3D tile specification.  This allows it to be displayed in Cesium with the `3d-tiles` branch, which is compiled and bundled in this repository.
+Now we'll need to statically serve this data over HTTP.
+```
+docker run -it \
+    -v ~/entwine/cesium:/var/www \
+    -p 8080:8080 \
+    connormanning/http-server
+```
 
-### What next?
-By replacing the arguments to `-i` (input) and `-o` (output) from the command above, you can build more of your own datasets locally and view them in Cesium by replacing the `resource` query parameter.
-
-## Anything else?
-
-### What could go wrong?
-Your data needs to contain accurate coordinate system information so that it can be reprojected properly.  Otherwise you may get errors during indexing or be unable to view your output properly.  If the elevation offsets aren't correct for your data's projection, then your output may end up floating far above or below the earth's surface when viewed in Cesium.
-
-### State of Entwine's 3D Tiles output
-Entwine's 3D tiles is very much a prototype.  It may change, and doesn't support some things that the rest of Entwine supports.  For example, subset builds and merges are not supported for `cesium`-style builds.  Neither are continued builds (full support will come soon).  Modifying certain configuration entries, which would otherwise be supported, may produce invalid outputs.
+Now we can view the data [here](http://cesium.entwine.io/?url=http://localhost:8080/red-rocks).
 
 ## Licensing
 This repository consists mostly of a compiled version of Cesium, which is Apache licensed.  The rest of the repository will adopt the Apache license as well.  See the full license [here](https://github.com/connormanning/entwine-cesium-pages/blob/master/LICENSE.md).
+

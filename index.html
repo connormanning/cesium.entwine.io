@@ -43,29 +43,29 @@
                     </thead>
                     <tbody>
                         <tr><td class="text-center">
-                            <a href="?resource=nyc"/>New York City</a>
+                            <a href="?url=http://cesium.entwine.io/data/nyc/cesium"/>New York City</a>
                         </td></tr>
                         <tr><td class="text-center">
-                            <a href="?resource=red-rocks"/>
+                            <a href="?url=http://cesium.entwine.io/data/red-rocks/cesium"/>
                                 Red Rocks Amphitheatre
                             </a>
                             <div class="small"><a href="https://dronemapper.com/sample_data">DroneMapper</a> sample data</div>
                         </td></tr>
                         <tr><td class="text-center">
-                            <a href="?resource=st-helens"/>Mount St. Helens</a>
+                            <a href="?url=http://cesium.entwine.io/data/st-helens/cesium"/>Mount St. Helens</a>
                         </td></tr>
                         <tr><td class="text-center">
-                            <a href="?resource=half-dome"/>Half Dome - Yosemite</a>
+                            <a href="?url=http://cesium.entwine.io/data/half-dome/cesium"/>Half Dome - Yosemite</a>
                         </td></tr>
                         <tr><td class="text-center">
-                            <a href="?resource=autzen"/>Autzen Stadium</a>
+                            <a href="?url=http://cesium.entwine.io/data/autzen/cesium"/>Autzen Stadium</a>
                         </td></tr>
                         <tr><td class="text-center">
-                            <a href="?resource=nepal"/>Nepal</a>
+                            <a href="?url=http://cesium.entwine.io/data/nepal/cesium"/>Nepal</a>
                             <div class="small">Vanuatu village, Nepal. <a href="http://www.globaldirt.org/">GlobalDIRT</a></div>
                         </td></tr>
                         <tr><td class="text-center">
-                            <a href="?resource=bridge"/>Iowa Bridge</a>
+                            <a href="?url=http://cesium.entwine.io/data/bridge/cesium"/>Iowa Bridge</a>
                             <div class="small">University Ave., Cedar Falls, IA - Iowa DOT</div>
                         </td></tr>
                     </tbody>
@@ -110,10 +110,6 @@
     };
 
     var url = getQueryParam('url');
-    if (!url && getQueryParam('resource')) {
-        url = './data' + getQueryParam('resource') + '/cesium';
-    }
-
     if (!url) {
         document.getElementById("top").style.display = "block";
         document.getElementById("entwine-logo").style.display = "none";
