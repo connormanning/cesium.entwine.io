@@ -35,7 +35,7 @@ docker run -it \
     connormanning/http-server
 ```
 
-Now we can view the data [here](http://cesium.entwine.io/?url=http://localhost:8080/red-rocks).
+Now we can view the data [here](http://cesium.entwine.io/?url=http://localhost:8080/red-rocks/tileset.json).
 
 ## Licensing
 This repository consists mostly of a compiled version of Cesium, which is Apache licensed.  The rest of the repository will adopt the Apache license as well.  See the full license [here](https://github.com/connormanning/entwine-cesium-pages/blob/master/LICENSE.md).
