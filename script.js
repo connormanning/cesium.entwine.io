@@ -41,7 +41,7 @@ if (!url) {
   const terrainProviders = Cesium.createDefaultTerrainProviderViewModels();
 
   const viewer = new Cesium.Viewer("cesiumContainer", {
-    creditContainer: 'nullContainer',
+    creditContainer: "nullContainer",
     imageryProviderViewModels: imageryProviders,
     selectedImageryProviderViewModel: imageryProviders[0],
     terrainProviderViewModels: terrainProviders,
@@ -62,7 +62,7 @@ if (!url) {
       console.log("Asset", tileset.asset);
       console.log("Properties", tileset.properties);
 
-      const divisor = truncate ? 65536 : 256;
+      const divisor = truncate ? 256 : 1;
 
       const color = tileset.asset.ept.schema.some((d) => d.name === "Red")
         ? undefined // Use the included RGB if it exists
@@ -90,7 +90,7 @@ if (!url) {
       viewer.camera.setView({ destination });
     } catch (e) {
       console.error(e);
-      setMessage(e.message || 'An unknown error occurred')
+      setMessage(e.message || "An unknown error occurred");
     }
   });
 }
