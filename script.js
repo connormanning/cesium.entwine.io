@@ -20,9 +20,11 @@ const setMessage = (message) => {
 const {
   url,
   "point-size": pointSize = 2.5,
-  truncate = false,
+  truncate: rawTruncate,
   ...forward
 } = query;
+
+const truncate = rawTruncate === 'true' || rawTruncate === '1'
 
 // If no URL, then we're on the main page.
 if (!url) {
@@ -69,6 +71,8 @@ if (!url) {
         : tileset.asset.options.dimensions.includes("Intensity")
         ? `rgb(\${Intensity} / ${divisor}, \${Intensity} / ${divisor}, \${Intensity} / ${divisor})`
         : undefined;
+
+      console.log("Color", color);
 
       tileset.style = new Cesium.Cesium3DTileStyle({ color, pointSize });
 
