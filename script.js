@@ -20,11 +20,12 @@ const setMessage = (message) => {
 const {
   url,
   "point-size": pointSize = 2.5,
-  truncate: rawTruncate,
+  "truncate-intensity": rawTruncateIntensity,
   ...forward
 } = query;
 
-const truncate = rawTruncate === 'true' || rawTruncate === '1'
+const truncateIntensity =
+  rawTruncateIntensity === "true" || rawTruncateIntensity === "1";
 
 // If no URL, then we're on the main page.
 if (!url) {
@@ -64,7 +65,7 @@ if (!url) {
       console.log("Asset", tileset.asset);
       console.log("Properties", tileset.properties);
 
-      const divisor = truncate ? 256 : 1;
+      const divisor = truncateIntensity ? 256 : 1;
 
       const color = tileset.asset.ept.schema.some((d) => d.name === "Red")
         ? undefined // Use the included RGB if it exists
