@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
   <title>Entwine 3DTiles</title>
-  <script src="./Build/CesiumUnminified/Cesium.js"></script>
+  <script src="./Build/Cesium.js"></script>
   <style>
-      @import url(./Build/Cesium/Widgets/widgets.css);
+      @import url(./Build/Widgets/widgets.css);
       #cesiumContainer {
           width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden;
       }
@@ -73,7 +73,6 @@
             </div>
             <div id="more">
                 <h3 class="text-center">Other renderers</h3>
-                <p class="text-center"><a href="http://speck.ly">Plasio</a><p>
                 <p class="text-center"><a href="http://potree.entwine.io">Potree</a></p>
             </div>
             <div class="row">
@@ -81,10 +80,8 @@
                 <div class="col-xs-10 col-xs-8" id="about">
                     <h3 class="text-center">What's this?</h3>
                     <p>
-                        This is a demo showing the results of Entwine's 3D Tiles output within Cesium.  Some links for more background:
+                        This is a demo showing the results of Entwine's 3D Tiles output within Cesium.
                         <ul>
-                            <li><a href="https://github.com/connormanning/entwine/pull/12">Pull request for 3D tiles output from Entwine</a></li>
-                            <li><a href="https://github.com/AnalyticalGraphicsInc/3d-tiles/issues/22">3D Tiles point cloud tile specification discussion</a></li>
                             <li><a href="https://github.com/connormanning/entwine-cesium-pages">Source for this website, including instructions to build your own 3D tiles with Entwine</a></li>
                         </ul>
                     </p>
@@ -94,108 +91,15 @@
         </div>
     </div>
   <div id="cesiumContainer"></div>
+  <div id="message"></div>"
+  <div id="nullContainer"></div>
   <div id="entwine-logo">
       <a href="https://entwine.io">
           <img id="entwine-image" src="img/logo.png"/>
       </a>
   </div>
-  <script>
-    var getQueryParam = function(name) {
-        name = name.replace(/[\[\]]/g, "\\$&");
-        var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
-            results = regex.exec(window.location.href);
-        if (!results) return null;
-        if (!results[2]) return '';
-        return decodeURIComponent(results[2].replace(/\+/g, " "));
-    };
+  <script src="./script.js"></script>
 
-    var url = getQueryParam('url');
-    if (!url) {
-        document.getElementById("top").style.display = "block";
-        document.getElementById("entwine-logo").style.display = "none";
-    }
-    else {
-        var style = document.createElement('style');
-        style.innerHTML = "body, html { width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden; } #top { display: none; }"
-        document.body.appendChild(style);
-
-        var imageryProviders = Cesium.createDefaultImageryProviderViewModels();
-        var terrainProviders = Cesium.createDefaultTerrainProviderViewModels();
-
-        var viewer = new Cesium.Viewer('cesiumContainer', {
-            imageryProviderViewModels: imageryProviders,
-            selectedImageryProviderViewModel: imageryProviders[6],
-            terrainProviderViewModels: terrainProviders,
-            selectedTerrainProviderViewModel: terrainProviders[1]
-        });
-
-        var tileset = viewer.scene.primitives.add(new Cesium.Cesium3DTileset({
-            url: url
-        }));
-
-        tileset.style = new Cesium.Cesium3DTileStyle({
-            pointSize: getQueryParam('pointSize') || 2
-        });
-
-        tileset.readyPromise.then(function() {
-            console.log('Loaded tileset');
-            var bounding = tileset._root._boundingVolume;
-            var center = bounding.boundingSphere.center;
-            var cart = Cesium.Ellipsoid.WGS84.cartesianToCartographic(center);
-
-            var dest = Cesium.Cartesian3.fromDegrees(
-                    cart.longitude * (180 / Math.PI),
-                    cart.latitude * (180 / Math.PI),
-                    bounding._boundingSphere.radius * 1.0);
-
-            viewer.camera.setView({ destination: dest });
-        });
-    }
-  </script>
+  <link rel="stylesheet" href="style.css">
 </body>
-
-<style>
-body {
-    background: #eee;
-}
-
-.table {
-    border-radius: 5px;
-    width: 50%;
-    margin: 0px auto;
-    float: none;
-}
-
-#entwine-banner, #cesium-banner, #tiles-banner {
-    width: 100%;
-}
-
-#resources {
-    margin-top: 64px;
-}
-
-#more, #about {
-    margin-top: 32px;
-}
-
-#top {
-    display: none;
-    margin: 10px 10px 10px 10px;
-}
-
-#entwine-logo {
-    position: absolute;
-    bottom: 56px;
-    left: 176px;
-}
-
-#entwine-image {
-    width: 128px;
-}
-
-.cesium-credit-text, .cesium-credit-delimiter {
-    display: none;
-}
-</style>
 </html>
-

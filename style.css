@@ -1,0 +1,51 @@
+body {
+    background: #eee;
+}
+
+.table {
+    border-radius: 5px;
+    width: 50%;
+    margin: 0px auto;
+    float: none;
+}
+
+#entwine-banner, #cesium-banner, #tiles-banner {
+    width: 100%;
+}
+
+#resources {
+    margin-top: 64px;
+}
+
+#more, #about {
+    margin-top: 32px;
+}
+
+#top {
+    display: none;
+    margin: 10px 10px 10px 10px;
+}
+
+#entwine-logo {
+    position: absolute;
+    bottom: 58px;
+    left: 174px;
+}
+
+#entwine-image {
+    width: 128px;
+}
+
+#message {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 18px;
+  color: white;
+  text-shadow: 1px solid black;
+}
+
+#nullContainer {
+  display: none;
+}
